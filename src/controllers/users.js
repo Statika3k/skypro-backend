@@ -1,27 +1,66 @@
-const { request } = require("express");
+const User = require("../models/user");
 
-const getUsers = (require, response) => {
-  //Get all users
+// Получим всех пользователей из БД
+const getUsers = (req, res) => {
+  User.find({})
+    .then((user) => {
+      res.status(200).send(user);
+    })
+    .catch((e) => {
+      res.status(500).send(e.message);
+    });
 };
 
-const getUser = (require, response) => {
-  const { user_id } = request.params;
-  response.status(200);
-  response.send(`User with id: ${user_id}`);
+// Получим пользователя по ID
+const getUser = (req, res) => {
+  const { user_id } = req.params;
+  User.findById(user_id)
+    .then((user) => {
+      if (!user) res.status(404).send("Пользователь не найден");
+      res.status(200).send(user);
+    })
+    .catch((e) => {
+      res.status(500).send(e.message);
+    });
 };
 
-const createUser = (require, response) => {
-  //Create new user
-  response.status(201);
-  response.send(request.body)
+// Создаем пользователя
+const createUser = (req, res) => {
+  const data = req.body;
+  User.create(data)
+    .then((user) => {
+      res.status(201).send(user);
+    })
+    .catch((e) => {
+      res.status(500).send(e.message);
+    });
 };
 
-const updateUser = (require, response) => {
-  //Update user
+// Обновляем пользователя
+const updateUser = (req, res) => {
+  const { user_id } = req.params;
+  const data = req.body;
+  User.findByIdAndUpdate(user_id, data, { new: true, runValidators: true })
+    .then((user) => {
+      if (!user) res.status(404).send("Пользователь не найден");
+      res.status(200).send(user);
+    })
+    .catch((e) => {
+      res.status(500).send(e.message);
+    });
 };
 
-const deleteUser = (require, response) => {
-  //Delete user
+// Удаляем пользователя
+const deleteUser = (req, res) => {
+  const { user_id } = req.params;
+  User.findByIdAndDelete(user_id)
+    .then((user) => {
+      if (!user) res.status(404).send("Пользователь не найден");
+      res.status(200).send("Done");
+    })
+    .catch((e) => {
+      res.status(500).send(e.message);
+    });
 };
 
 module.exports = {
