@@ -4,8 +4,9 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const userRouter = require("./routes/users");
-const loggerOne = require("./middlewares/loggerOne");
-const loggerTwo = require("./middlewares/loggerTwo");
+const bookRouter = require("./routes/books")
+const logger = require("./middlewares/logger");
+
 
 dotenv.config();
 
@@ -24,8 +25,8 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(loggerOne);
-app.use(loggerTwo);
+app.use(logger);
+
 
 app.get("/", (request, response) => {
   response.status(200);
@@ -38,7 +39,7 @@ app.post("/", (request, response) => {
 });
 
 app.use(userRouter);
-
+app.use(bookRouter);
 app.listen(PORT, () => {
   console.log(`Ссылка на сервер: ${API_URL}:${PORT}`);
 });
